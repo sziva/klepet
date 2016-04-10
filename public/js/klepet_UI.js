@@ -1,19 +1,32 @@
 function divElementEnostavniTekst(sporocilo) {
   var jeSmesko = sporocilo.indexOf('http://sandbox.lavbic.net/teaching/OIS/gradivo/') > -1;
-  if (jeSmesko) {
+  var jeSlika = sporocilo.indexOf('<img')> -1; //DODANO!!
+  if (jeSmesko && jeSlika) { //SPREMENJENO!!
+     return $('<div style="font-weight: bold"></div>').html(sporocilo); 
+  }else if (jeSmesko){
     sporocilo = sporocilo.replace(/\</g, '&lt;').replace(/\>/g, '&gt;').replace('&lt;img', '<img').replace('png\' /&gt;', 'png\' />');
     return $('<div style="font-weight: bold"></div>').html(sporocilo);
-  } else {
+  } else if (jeSlika){
+    return $('<div style="font-weight: bold"></div>').html(sporocilo);
+  }
     return $('<div style="font-weight: bold;"></div>').text(sporocilo);
   }
-}
 
-function divElementHtmlTekst(sporocilo) {
-  return $('<div></div>').html('<i>' + sporocilo + '</i>');
+  function divElementHtmlTekst(sporocilo) {
+    return $('<div></div>').html('<i>' + sporocilo + '</i>');
 }
 
 function procesirajVnosUporabnika(klepetApp, socket) {
   var sporocilo = $('#poslji-sporocilo').val();
+  var regExp = new RegExp(/https?:\/\/[^ ]*\.(?:jpg|png|gif)/gi); 
+  slike = '';
+  var povezava = sporocilo.match(regExp);
+  if(povezava){
+    for(var i = 0; i < povezava.length; i++){
+      slike += '<br><img style="width:200px;margin-left:20px;" src="'+ povezava[i]+'"><br>';
+    }
+    sporocilo += slike;
+  }
   sporocilo = dodajSmeske(sporocilo);
   var sistemskoSporocilo;
 
